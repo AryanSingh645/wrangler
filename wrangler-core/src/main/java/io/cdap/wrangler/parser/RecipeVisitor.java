@@ -15,7 +15,8 @@
  */
 
 package io.cdap.wrangler.parser;
-
+import io.cdap.wrangler.api.parser.ByteSize;
+import io.cdap.wrangler.api.parser.TimeDuration;
 import io.cdap.wrangler.api.LazyNumber;
 import io.cdap.wrangler.api.RecipeSymbol;
 import io.cdap.wrangler.api.SourceInfo;
@@ -325,5 +326,22 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     int lineno = ctx.getStart().getLine();
     int column = ctx.getStart().getCharPositionInLine();
     return new SourceInfo(lineno, column, text);
+  }
+  
+  @Override
+  public RecipeSymbol.Builder visitValue(DirectivesParser.ValueContext ctx) {
+    if (ctx.BYTE_SIZE() != null) {
+        String value = ctx.BYTE_SIZE().getText();
+        builder.addToken(new ByteSize(value));
+        return builder;
+    }
+
+    if (ctx.TIME_DURATION() != null) {
+        String value = ctx.TIME_DURATION().getText();
+        builder.addToken(new TimeDuration(value));
+        return builder;
+    }
+
+    return super.visitValue(ctx);
   }
 }
